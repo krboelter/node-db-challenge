@@ -43,8 +43,8 @@ server.get("/api/project", async (req, res, next) => {
 server.post("/api/project", async (req, res, next) => {
     try {
         const newProject = {
-            name: req.body.name,
-            description: req.body.description,
+            project_name: req.body.project_name,
+            project_description: req.body.project_description,
             completed: false
         }
 
@@ -60,7 +60,7 @@ server.get("/api/task", async (req, res, next) => {
     try {
         const task = await db("task as t")
             .join("project as p", "p.id", "t.project_id")
-            .select("p.name", "p.description", "t.description", "t.notes", "t.id", "t.completed")
+            .select("p.project_name", "p.project_description", "t.task_description", "t.notes", "t.id", "t.completed")
 
         res.status(200).json(task)
     } catch(err) {
@@ -72,7 +72,7 @@ server.get("/api/task", async (req, res, next) => {
 server.post("/api/task", async (req, res, next) => {
     try {
         const newTask = {
-            description: req.body.description,
+            task_description: req.body.task_description,
             notes: req.body.notes,
             completed: false,
             project_id: req.body.project_id

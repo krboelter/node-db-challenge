@@ -33,7 +33,14 @@ server.post("/api/resource", async (req, res, next) => {
 server.get("/api/project", async (req, res, next) => {
     try {
         const project = await db("project")
-        res.status(200).json(project)
+        const boolProject = project.map(proj => {
+            return {
+                ...proj,
+                completed: proj.completed ? true : false
+            }
+        })
+
+        res.status(200).json(boolProject)
     } catch(err) {
         next(err)
     }
@@ -45,7 +52,7 @@ server.post("/api/project", async (req, res, next) => {
         const newProject = {
             project_name: req.body.project_name,
             project_description: req.body.project_description,
-            completed: false
+            completed: req.body.completed || false
         }
 
         await db("project").insert(newProject)
@@ -60,9 +67,18 @@ server.get("/api/task", async (req, res, next) => {
     try {
         const task = await db("task as t")
             .join("project as p", "p.id", "t.project_id")
-            .select("p.project_name", "p.project_description", "t.task_description", "t.notes", "t.id", "t.completed")
+            .select("p.project_name AS derrick" /* Aliasing */, "p.project_description", "t.task_description", "t.notes", "t.id", "t.completed")
 
-        res.status(200).json(task)
+            
+        const boolTask = task.map(task => {
+            return {
+                ...task,
+                completed: task.completed ? true : false
+            }
+        })
+    
+
+        res.status(200).json(boolTask)
     } catch(err) {
         next(err)
     }
